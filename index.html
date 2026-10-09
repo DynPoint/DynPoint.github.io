@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="description" content="DynPoint: Dynamic Neural Point For View Synthesis (NeurIPS 2023). Fast novel-view synthesis of monocular dynamic videos from consistent depth, scene flow and neural point clouds.">
+  <meta name="keywords" content="DynPoint, dynamic view synthesis, scene flow, neural point cloud, monocular video, NeurIPS 2023">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DynPoint: Dynamic Neural Point For View Synthesis</title>
+
+  <meta property="og:title" content="DynPoint: Dynamic Neural Point For View Synthesis" />
+  <meta property="og:description" content="Fast novel-view synthesis of monocular dynamic videos from consistent depth, scene flow and hierarchical neural point clouds." />
+  <meta property="twitter:card" content="summary" />
+  <meta property="twitter:title" content="DynPoint: Dynamic Neural Point For View Synthesis" />
+
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro" rel="stylesheet">
+  <link rel="stylesheet" href="./static/css/bulma.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
+  <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="./static/css/index.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script defer src="./static/js/fontawesome.all.min.js"></script>
+  <script src="./static/js/bulma-carousel.min.js"></script>
+  <script src="./static/js/bulma-slider.min.js"></script>
+  <style>
+    .teaser-video { max-width: 92%; margin: 0 auto; display: block; border-radius: 6px; box-shadow: 0 4px 12px rgba(0,0,0,.15); }
+    .vid-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; align-items: start; }
+    .vid-grid.three { grid-template-columns: repeat(3, 1fr); }
+    @media (max-width: 768px) { .vid-grid, .vid-grid.three { grid-template-columns: 1fr; } }
+    .vid-grid figure, .content .vid-grid figure:not(:first-child), .content .vid-grid figure:not(:last-child) { margin: 0 !important; }
+    .vid-grid video { width: 100%; aspect-ratio: 1620 / 288; object-fit: fill; border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,.12); display: block; }
+    .vid-grid figcaption { font-size: 14px; color: #555; margin-top: 6px; text-align: center; }
+    .legend { font-size: 14px; color: #555; text-align: center; margin: 6px 0 18px; }
+    .metrics td, .metrics th { padding: 6px 10px; }
+    .metrics { margin: 0 auto; }
+    .pipeline-img { width: 100%; display: block; margin: 0 auto; }
+    .stage-img { width: 100%; border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,.12); }
+  </style>
+</head>
+
+<body>
+
+  <section class="hero">
+    <div class="hero-body">
+      <div class="container is-max-desktop">
+        <div class="columns is-centered">
+          <div class="column has-text-centered">
+            <h1 class="title is-1 publication-title">DynPoint: Dynamic Neural Point For View Synthesis</h1>
+            <h2 class="title is-4" style="color:#555; font-weight:500;">NeurIPS 2023</h2>
+            <div class="is-size-5 publication-authors">
+              <span class="author-block"><a href="https://kaichen-z.github.io/">Kaichen Zhou</a>,</span>
+              <span class="author-block">Jia-Xing Zhong,</span>
+              <span class="author-block">Sangyun Shin,</span>
+              <span class="author-block">Kai Lu,</span>
+              <span class="author-block">Yiyuan Yang,</span>
+              <span class="author-block">Andrew Markham,</span>
+              <span class="author-block">Niki Trigoni</span>
+            </div>
+            <div class="is-size-5 publication-authors">
+              <span class="author-block">Department of Computer Science, University of Oxford</span>
+            </div>
+            <div class="is-size-6" style="margin-top: 8px; color:#555;">Keywords: dynamic view synthesis, monocular video, scene flow, neural point clouds.</div>
+
+            <div class="column has-text-centered">
+              <div class="publication-links">
+                <span class="link-block">
+                  <a href="https://arxiv.org/abs/2310.18999" class="external-link button is-normal is-rounded is-dark">
+                    <span class="icon"><i class="ai ai-arxiv"></i></span><span>arXiv</span></a>
+                </span>
+                <span class="link-block">
+                  <a href="https://arxiv.org/pdf/2310.18999" class="external-link button is-normal is-rounded is-dark">
+                    <span class="icon"><i class="fas fa-file-pdf"></i></span><span>Paper</span></a>
+                </span>
+                <span class="link-block">
+                  <a href="https://github.com/kaichen-z/DynPoint" class="external-link button is-normal is-rounded is-dark">
+                    <span class="icon"><i class="fab fa-github"></i></span><span>Code</span></a>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="hero teaser" style="padding-top:0;">
+    <div class="container is-max-desktop">
+      <div class="hero-body" style="padding-top:0;">
+        <video class="teaser-video" src="resources/videos/teaser_nvidia.mp4" autoplay loop muted playsinline></video>
+        <div class="legend">Input monocular video &nbsp;|&nbsp; novel view as the camera slides along the capture trajectory (±2 cameras) &nbsp;|&nbsp; rendered depth. Nvidia Dynamic Scene: Umbrella, Truck, Balloon1, and the DAVIS train sequence. Each scene is trained in ~19 minutes on one GPU.</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" style="padding-top: 0rem;">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column is-full-width has-text-centered">
+          <h2 class="title is-4" style="font-weight: 700;">Abstract</h2>
+          <div class="content has-text-justified">
+            <p>
+              The introduction of neural radiance fields has greatly improved the effectiveness of view synthesis for monocular videos. However, existing algorithms face difficulties when dealing with uncontrolled or lengthy scenarios, and require extensive training time specific to each new scenario. To tackle these limitations, we propose DynPoint, an algorithm designed to facilitate the rapid synthesis of novel views for unconstrained monocular videos. Rather than encoding the entirety of the scenario information into a latent representation, DynPoint concentrates on predicting the explicit 3D correspondence between neighboring frames to realize information aggregation. Specifically, this correspondence prediction is achieved through the estimation of consistent depth and scene flow information across frames. Subsequently, the acquired correspondence is utilized to aggregate information from multiple reference frames to a target frame, by constructing hierarchical neural point clouds. The resulting framework enables swift and accurate view synthesis for desired views of target frames. The experimental results obtained demonstrate the considerable acceleration of training time achieved — typically an order of magnitude — by our proposed method while yielding comparable outcomes compared to prior approaches. Furthermore, our method exhibits strong robustness in handling long-duration videos without learning a canonical representation of video content.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="Method" style="padding-top: 0rem;">
+    <div class="container is-max-desktop content">
+      <h2 class="title is-4" style="font-weight: 700; text-align:center;">Method</h2>
+      <img class="pipeline-img" src="resources/pipeline.png?v=3" alt="DynPoint pipeline">
+      <p class="legend" style="text-align:justify;">
+        <b>Stage 1 — correspondence.</b> A pre-trained flow network and a monocular depth network give optic flow and relative depth; triangulation against the 2K neighbouring frames, masked by correspondence / geometric-edge / dynamic masks, fixes the scale and shift of every depth map (consistent depth). A small MLP then predicts the forward and backward scene flow of every surface point, chained across frames and supervised by re-projection onto the optic flow with a cycle constraint.
+        <b>Stage 2 — aggregation and rendering.</b> The 2K reference frames are lifted to 3D, moved to the target time with the scene flow and merged with the target frame into a hierarchical neural point cloud. A rendering MLP aggregates the neural points around each query point and predicts density and colour, which are volume-rendered into the novel view.
+      </p>
+    </div>
+  </section>
+
+  <section class="section" id="Viewer" style="padding-top: 0rem;">
+    <div class="container is-max-desktop content">
+      <h2 class="title is-4" style="font-weight: 700; text-align:center;">Stage 1: Consistent Depth and Scene Flow (interactive, one frame per video)</h2>
+      <p class="legend">The consistent-depth point cloud of one frame, lifted to 3D (drag to rotate, scroll to zoom). Colour by RGB or by depth. Yellow→red segments are the scene flow of the dynamic points to the frame 3 steps later; the blue cloud shows the dynamic points of that later frame at their own position. Blue frustum = the camera of the frame.</p>
+      <div class="field is-grouped is-grouped-multiline" style="justify-content:center; gap:10px; margin-bottom:8px;">
+        <div class="control"><div class="select is-small"><select id="vw-scene">
+          <option value="nsff_Umbrella">Umbrella</option><option value="nsff_Truck-2">Truck</option><option value="nsff_Balloon1-2">Balloon1</option>
+          <option value="nsff_Balloon2-2">Balloon2</option><option value="nsff_Jumping">Jumping</option><option value="nsff_Skating-2">Skating</option>
+          <option value="nsff_Playground">Playground</option><option value="davis_train">DAVIS train</option>
+          <option value="wild_goat">wild: goat</option><option value="wild_camel">wild: camel</option><option value="wild_bear">wild: bear</option>
+        </select></div></div>
+        <div class="control"><label class="radio"><input type="radio" name="vw-mode" value="rgb" checked> RGB</label>&nbsp;
+          <label class="radio"><input type="radio" name="vw-mode" value="depth"> depth colour</label></div>
+        <div class="control"><label class="checkbox"><input type="checkbox" id="vw-flow" checked> scene flow</label></div>
+        <div class="control"><label class="checkbox"><input type="checkbox" id="vw-ref"> dynamic points at t+3</label></div>
+        <div class="control"><label>flow length <input type="range" id="vw-fs" min="0.2" max="5" step="0.1" value="1" style="vertical-align:middle;"></label></div>
+      </div>
+      <div id="vw-container" style="width:100%; border:1px solid #ddd; border-radius:6px; overflow:hidden;"></div>
+      <p class="legend" id="vw-info"></p>
+    </div>
+  </section>
+  <script type="importmap">{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js", "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/" } }</script>
+  <script type="module">
+    import { makeViewer } from './static/js/viewer.js';
+    const v = makeViewer(document.getElementById('vw-container'), { height: 560, pointSize: 0.006 });
+    const info = document.getElementById('vw-info');
+    async function load() {
+      const s = document.getElementById('vw-scene').value;
+      const h = await v.load(`resources/viewer/${s}.bin`);
+      info.textContent = `${h.scene}: frame ${h.t} (reference ${h.ref}), ${h.n_points.toLocaleString()} points, ${h.n_flow} flow vectors shown; median scene-flow magnitude ${(h.flow_scale_hint * h.scale).toFixed(3)} scene units over 3 frames.`;
+    }
+    document.getElementById('vw-scene').addEventListener('change', load);
+    document.querySelectorAll('input[name="vw-mode"]').forEach(r => r.addEventListener('change', e => v.set({ mode: e.target.value })));
+    document.getElementById('vw-flow').addEventListener('change', e => v.set({ showFlow: e.target.checked }));
+    document.getElementById('vw-ref').addEventListener('change', e => v.set({ showRef: e.target.checked }));
+    document.getElementById('vw-fs').addEventListener('input', e => v.set({ flowScale: parseFloat(e.target.value) }));
+    load();
+  </script>
+
+  <section class="section" id="Results-paper" style="padding-top: 0rem;">
+    <div class="container is-max-desktop content">
+      <h2 class="title is-4" style="font-weight: 700; text-align:center;">Stage 2: View Synthesis on the Nvidia Dynamic Scene Dataset</h2>
+      <p class="legend">Each video: three frozen moments of the video (frames 6, 12, 18); for each, the camera sweeps ±2 training cameras along the capture trajectory. Input frame &nbsp;|&nbsp; synthesised novel view &nbsp;|&nbsp; rendered depth. 540×288. Videos use the visualisation filter (reference points at depth discontinuities pruned, sharper neighbour selection); see note under the table.</p>
+      <div class="vid-grid">
+        <figure><video src="resources/videos/nvidia_Umbrella.mp4" autoplay loop muted playsinline></video><figcaption>Umbrella</figcaption></figure>
+        <figure><video src="resources/videos/nvidia_Truck-2.mp4" autoplay loop muted playsinline></video><figcaption>Truck</figcaption></figure>
+        <figure><video src="resources/videos/nvidia_Balloon1-2.mp4" autoplay loop muted playsinline></video><figcaption>Balloon1</figcaption></figure>
+        <figure><video src="resources/videos/nvidia_Balloon2-2.mp4" autoplay loop muted playsinline></video><figcaption>Balloon2</figcaption></figure>
+        <figure><video src="resources/videos/nvidia_Jumping.mp4" autoplay loop muted playsinline></video><figcaption>Jumping</figcaption></figure>
+        <figure><video src="resources/videos/nvidia_Skating-2.mp4" autoplay loop muted playsinline></video><figcaption>Skating</figcaption></figure>
+        <figure><video src="resources/videos/nvidia_Playground.mp4" autoplay loop muted playsinline></video><figcaption>Playground</figcaption></figure>
+        <figure><video src="resources/videos/davis_train.mp4" autoplay loop muted playsinline></video><figcaption>DAVIS train (40 frames)</figcaption></figure>
+      </div>
+
+      <h3 class="title is-5" style="font-weight: 700; text-align:center; margin-top: 28px;">Comparison with the paper and baselines (PSNR ↑ / LPIPS ↓)</h3>
+      <p class="legend">Numbers from Table 1 of the paper (Nvidia Dynamic Scene dataset, DynamicNeRF 12-frame split; training time per scene in brackets).</p>
+      <div style="overflow-x:auto;">
+      <table class="table is-striped is-narrow metrics" style="font-size:13px;">
+        <thead><tr><th>Method</th><th>Jumping</th><th>Skating</th><th>Truck</th><th>Umbrella</th><th>Balloon1</th><th>Balloon2</th><th>Playground</th><th>Average</th></tr></thead>
+        <tbody>
+          <tr><td>NeRF (~24 h)</td><td>20.99 / 0.305</td><td>23.67 / 0.311</td><td>22.73 / 0.229</td><td>21.29 / 0.440</td><td>19.82 / 0.205</td><td>24.37 / 0.098</td><td>21.07 / 0.165</td><td>21.99 / 0.250</td></tr>
+          <tr><td>NeRF + time (~24 h)</td><td>18.04 / 0.455</td><td>20.32 / 0.512</td><td>18.33 / 0.382</td><td>17.69 / 0.728</td><td>18.54 / 0.275</td><td>20.69 / 0.216</td><td>14.68 / 0.421</td><td>18.33 / 0.427</td></tr>
+          <tr><td>D-NeRF (&gt; 20 h)</td><td>22.36 / 0.193</td><td>22.48 / 0.323</td><td>24.10 / 0.145</td><td>21.47 / 0.264</td><td>19.06 / 0.259</td><td>20.76 / 0.277</td><td>20.18 / 0.164</td><td>21.48 / 0.232</td></tr>
+          <tr><td>NSFF (~24 h)</td><td>24.65 / 0.151</td><td>29.29 / 0.129</td><td>25.96 / 0.167</td><td>22.97 / 0.295</td><td>21.96 / 0.215</td><td>24.27 / 0.222</td><td>21.22 / 0.212</td><td>24.33 / 0.199</td></tr>
+          <tr><td>DynamicNeRF (&gt; 36 h)</td><td>24.68 / 0.090</td><td>32.66 / 0.035</td><td>28.56 / 0.082</td><td>23.26 / 0.137</td><td>22.36 / 0.104</td><td>27.06 / 0.049</td><td>24.15 / 0.080</td><td>26.10 / 0.082</td></tr>
+          <tr><td>HyperNeRF (&gt; 24 h)</td><td>18.34 / 0.302</td><td>21.97 / 0.183</td><td>20.61 / 0.205</td><td>18.59 / 0.443</td><td>13.96 / 0.530</td><td>16.57 / 0.411</td><td>13.17 / 0.495</td><td>17.60 / 0.367</td></tr>
+          <tr><td>TiNeuVox (~45 min)</td><td>20.81 / 0.247</td><td>23.32 / 0.152</td><td>23.86 / 0.173</td><td>20.00 / 0.355</td><td>17.30 / 0.353</td><td>19.06 / 0.279</td><td>13.84 / 0.437</td><td>19.74 / 0.285</td></tr>
+          <tr><td>RoDynRF (&gt; 36 h)</td><td>25.66 / 0.071</td><td>28.68 / 0.040</td><td>29.13 / 0.063</td><td>24.26 / 0.089</td><td>22.37 / 0.103</td><td>26.19 / 0.054</td><td>24.96 / 0.048</td><td>25.89 / 0.065</td></tr>
+          <tr><th>DynPoint, paper (~30 min)</th><th>24.69 / 0.097</th><th>31.34 / 0.045</th><th>29.30 / 0.061</th><th>24.59 / 0.086</th><th>22.77 / 0.099</th><th>27.63 / 0.049</th><th>25.37 / 0.039</th><th>26.53 / 0.068</th></tr>
+        </tbody>
+      </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="Results-wild" style="padding-top: 0rem;">
+    <div class="container is-max-desktop content">
+      <h2 class="title is-4" style="font-weight: 700; text-align:center;">In-the-Wild Videos (not in the paper)</h2>
+      <p class="legend">DAVIS 2017 sequences with no camera information: poses, intrinsics and the depth prior come from a feed-forward model (Depth-Anything-3), the DAVIS object annotation is the dynamic mask, and the rest of the pipeline is unchanged (dynamic points taken from the nearest references only). 40 frames per sequence; three frozen moments (frames 10, 20, 30), camera sweeping along the trajectory: input | novel view | depth.</p>
+      <video class="teaser-video" src="resources/videos/teaser_wild.mp4" autoplay loop muted playsinline style="margin-bottom:14px;"></video>
+      <div class="vid-grid three">
+        <figure><video src="resources/videos/wild_goat.mp4" autoplay loop muted playsinline></video><figcaption>goat</figcaption></figure>
+        <figure><video src="resources/videos/wild_camel.mp4" autoplay loop muted playsinline></video><figcaption>camel</figcaption></figure>
+        <figure><video src="resources/videos/wild_bear.mp4" autoplay loop muted playsinline></video><figcaption>bear</figcaption></figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="BibTeX" style="padding-top: 0rem;">
+    <div class="container is-max-desktop content">
+      <h2 class="title is-4" style="font-weight: 700;">BibTeX</h2>
+      <pre><code>@inproceedings{zhou2023dynpoint,
+  title     = {DynPoint: Dynamic Neural Point For View Synthesis},
+  author    = {Zhou, Kaichen and Zhong, Jia-Xing and Shin, Sangyun and Lu, Kai and Yang, Yiyuan and Markham, Andrew and Trigoni, Niki},
+  booktitle = {Advances in Neural Information Processing Systems (NeurIPS)},
+  year      = {2023}
+}</code></pre>
+    </div>
+  </section>
+
+  <section class="section" id="Acknowledgements" style="padding-top: 0rem;">
+    <div class="container is-max-desktop content">
+      <h2 class="title is-4" style="font-weight: 700;">Acknowledgements</h2>
+      <p>
+        Our research is supported by Amazon Web Services in the Oxford-Singapore Human-Machine Collaboration Programme and by the ACE-OPS project (EP/S030832/1). The Nvidia Dynamic Scene videos are from Yoon et al. (CVPR 2020) via the NSFF release; the in-the-wild sequences are from DAVIS 2017. This page uses the <a href="https://github.com/nerfies/nerfies.github.io">Nerfies</a> template.
+      </p>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="columns is-centered">
+        <div class="column is-8">
+          <div class="content has-text-centered">
+            <p>This website is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International License</a>.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>
